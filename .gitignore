@@ -1,0 +1,170 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment files (keep .env.template)
+.env
+
+# Build output
+dist/
+build/
+
+# IDEs
+.idea/
+.vscode/
+.DS_Store
+
+.husky/
+
+# Session artifacts
+.gemini/
+.auto-claude/
+
+# Testing
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Logs
+logs/
+*.log
+*.log.*
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Aider tool files
+.aider*
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Secrets and Security
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets/
+*.encrypted
+config/secrets/
+
+# Database backups
+*.sql
+*.dump
+backups/
+
+# Reports
+api_test_report_*.json
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Ignore test files with test data for security
+src/tests/test_models.py
+src/tests/test_user_auth.py

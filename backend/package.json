@@ -1,0 +1,13 @@
+{
+  "name": "tovplay-backend-e2e",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test:playwright": "playwright test",
+    "test:playwright:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0"
+  }
+}

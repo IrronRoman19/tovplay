@@ -1,0 +1,17 @@
+{
+  "service": "tovplay-frontend",
+  "status": "healthy",
+  "version": "1.0.0",
+  "environment": "production",
+  "description": "TovPlay frontend health endpoint - static file",
+  "endpoints": {
+    "root": "/",
+    "health": "/health.json",
+    "api": "/api/"
+  },
+  "build_info": {
+    "last_updated": "2025-01-09T12:00:00Z",
+    "build_tool": "vite",
+    "node_version": "20.x"
+  }
+}

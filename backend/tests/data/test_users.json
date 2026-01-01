@@ -1,0 +1,20 @@
+{
+  "valid_user": {
+    "Email": "unit_valid_user@test.local",
+    "Username": "UnitValidUser",
+    "Password": "Str0ng!PassX9",
+    "DiscordUsername": "UnitValid#1234"
+  },
+  "duplicate_email": {
+    "Email": "unit_existing@test.local",
+    "Username": "CopyCat",
+    "Password": "Str0ng!PassX9",
+    "DiscordUsername": "CopyCat#1234"
+  },
+  "invalid_password": {
+    "Email": "unit_weak@test.local",
+    "Username": "Weakling",
+    "Password": "123",
+    "DiscordUsername": "Weak#0000"
+  }
+}

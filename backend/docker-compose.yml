@@ -1,0 +1,93 @@
+version: "3.9"
+
+# UNIFIED DOCKER COMPOSE - Supports Local/Staging/Production
+#
+# USAGE:
+#   Local Dev (external DB):     docker-compose up backend
+#   Local Dev (local DB):        docker-compose --profile local-db up
+#   Production:                  docker-compose -f docker-compose.yml up -d
+#   Staging:                     docker-compose -f docker-compose.yml up -d
+#
+# Environment selection via .env file - copy .env.template and configure
+
+services:
+  # Optional local PostgreSQL database (only for local development)
+  db:
+    profiles:
+      - local-db
+    image: postgres:15
+    container_name: tovplay-db-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-tovplay}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./scripts/db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-tovplay}"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+    networks:
+      - tovplay-network
+
+  # Backend service - works for local/staging/production
+  backend:
+    env_file: .env
+    build:
+      context: .
+      target: ${BUILD_TARGET:-development}
+    image: ${BACKEND_IMAGE:-tovtech/tovplaybackend:latest}
+    container_name: ${CONTAINER_NAME:-backend-dev}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+        required: false  # Only required if using local-db profile
+    environment:
+      FLASK_ENV: ${FLASK_ENV:-development}
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      EMAIL_SENDER: ${EMAIL_SENDER}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
+      SMTP_SERVER: ${SMTP_SERVER}
+      SMTP_PORT: ${SMTP_PORT}
+      WEBSITE_URL: ${WEBSITE_URL}
+      APP_URL: ${APP_URL}
+      API_KEY: ${API_KEY}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      RATE_LIMIT_PER_MINUTE: ${RATE_LIMIT_PER_MINUTE:-60}
+      RATE_LIMIT_PER_HOUR: ${RATE_LIMIT_PER_HOUR:-3600}
+      DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
+      DISCORD_REDIRECT_URI: ${DISCORD_REDIRECT_URI}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+    ports:
+      - "${BACKEND_PORT:-8000}:5001"
+    volumes:
+      # Only mount source code in development
+      - ${SOURCE_MOUNT:-.:/app}
+      - /app/__pycache__
+    command: ${BACKEND_COMMAND:-flask run --host=0.0.0.0 --port=5001 --debug}
+    networks:
+      - tovplay-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  tovplay-network:
+    driver: bridge
+    name: ${NETWORK_NAME:-tovplay-dev-network}
+
+volumes:
+  db_data:
