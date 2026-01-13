@@ -24,8 +24,8 @@ then either run (choose one):
 flask run --host=0.0.0.0 --port=5001 --debug
 
 # Or run the project entrypoint (useful from an IDE)
-python run.py
-# On Windows PowerShell: python .\run.py
+./.venv/Scripts/python run.py
+# On Windows PowerShell: .\.venv\Scripts\python.exe .\run.py
 ```
 
 Access (local): http://localhost:5001/health
