@@ -27,7 +27,7 @@ function App() {
     const handleShowDialog = () => {
       const showDialog = sessionStorage.getItem('showCommunityDialog') === 'true';
       const inviteLink = sessionStorage.getItem('discordInviteLink');
-      
+
       if (showDialog && inviteLink) {
         setDiscordInviteLink(inviteLink);
         setShowCommunityDialog(true);
@@ -39,7 +39,7 @@ function App() {
 
     // Listen for the custom event
     window.addEventListener('showCommunityDialog', handleShowDialog);
-    
+
     // Initial check
     handleShowDialog();
 
@@ -59,9 +59,15 @@ function App() {
           }
 
           const communityData = await apiService.checkCommunityStatus();
-          const isInCommunity = communityData[`User ${communityData.discord_username} in our community`] || 
-                              communityData.in_community;
-          
+
+          // Safely check if user is in community
+          let isInCommunity = false;
+          if (communityData) {
+            isInCommunity = communityData[`User ${communityData.discord_username} in our community`] ||
+              communityData.in_community ||
+              false;
+          }
+
           if (!isInCommunity) {
             const inviteLink = import.meta.env.VITE_DISCORD_INVITE_LINK || 'https://discord.gg/FSVxjGAW';
             setDiscordInviteLink(inviteLink);
@@ -69,8 +75,13 @@ function App() {
           }
         } catch (error) {
           console.error('Error checking community status:', error);
-        } finally {
+          // Still set hasCheckedCommunity to true even on error to prevent infinite loading
           setHasCheckedCommunity(true);
+        } finally {
+          // Ensure hasCheckedCommunity is set in the finally block to prevent hanging
+          if (!hasCheckedCommunity) {
+            setHasCheckedCommunity(true);
+          }
         }
       } else {
         setHasCheckedCommunity(true);
@@ -85,7 +96,7 @@ function App() {
     // Check periodically (every 5 minutes)
     const interval = setInterval(checkCommunity, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [isLoggedIn]);  // Removed isDiscordRegistered from dependencies
+  }, [isLoggedIn, hasCheckedCommunity]);  // Removed isDiscordRegistered from dependencies
 
   // Listen for theme changes from other tabs/windows and system preference changes
   useEffect(() => {
@@ -104,20 +115,20 @@ function App() {
         document.documentElement.classList.toggle('dark', e.matches);
       }
     };
-    
+
     // Add event listeners
     window.addEventListener('storage', handleStorageChange);
     mediaQuery.addListener(handleSystemThemeChange);
-    
+
     // Initial theme setup
     const savedTheme = localStorage.getItem('tovplay-theme') || 'light';
     if (savedTheme === 'system') {
       document.documentElement.classList.toggle('dark', mediaQuery.matches);
     }
-    
+
     // Mark theme as loaded to prevent FOUC
     document.documentElement.classList.add('theme-loaded');
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       mediaQuery.removeListener(handleSystemThemeChange);
@@ -181,10 +192,10 @@ function App() {
           <TooltipProvider>
             <div className="min-h-screen bg-background text-foreground transition-colors duration-200 ease-in-out">
               <Pages track={track} page={page} identify={identify} />
-              <Toaster 
-                position="top-center" 
-                richColors 
-                closeButton 
+              <Toaster
+                position="top-center"
+                richColors
+                closeButton
                 toastOptions={{
                   classNames: {
                     toast: '!bg-background !text-foreground',
@@ -193,8 +204,8 @@ function App() {
                   },
                 }}
               />
-              <CommunityDialog 
-                isOpen={isLoggedIn && showCommunityDialog && hasCheckedCommunity} 
+              <CommunityDialog
+                isOpen={isLoggedIn && showCommunityDialog && hasCheckedCommunity}
                 onClose={() => setShowCommunityDialog(false)}
                 discordInviteLink={discordInviteLink}
               />

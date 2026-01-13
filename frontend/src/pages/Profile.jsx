@@ -40,12 +40,12 @@ const languageCodeMap = {
 };
 
 // Reverse mapping for getting code from name
-const languageNameToCode = Object.entries(languageMap).reduce((acc, [code, name]) => {
+const languageNameToCode = Object.entries(languageCodeMap).reduce((acc, [code, name]) => {
   acc[name] = code;
   return acc;
 }, {});
 
-const availableLanguages = Object.values(languageMap);
+const availableLanguages = Object.values(languageCodeMap);
 
 // Helper function to convert API language format to array of full names
 const parseLanguageString = (langString) => {

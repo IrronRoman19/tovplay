@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from '@/lib';
+import axios from '@/lib/axios-config';
 import { createPageUrl } from "@/utils";
 
 const VerifyOTP = () => {

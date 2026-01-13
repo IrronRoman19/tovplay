@@ -224,7 +224,21 @@ const getCurrentUserFromLocalStorage = () => {
   }
 };
 
-async function cancleSession(sessionId, message) {
+// Get user profile by user ID (alias for getUser)
+const getUserProfile = async userId => {
+  return getUser(userId);
+};
+
+// Get current user's profile based on stored user ID
+const getCurrentUserProfile = async () => {
+  const userId = LocalStorage.authUserId.get();
+  if (!userId) {
+    throw new Error("User not authenticated");
+  }
+  return getUser(userId);
+};
+
+async function cancelSession(sessionId, message) {
   return api.put(`/scheduled_sessions/cancel_session/${sessionId}`, { message });
 }
 
@@ -416,6 +430,8 @@ export const apiService = {
   put: (url, data, config) => request("put", url, data, config),
   delete: (url, config) => request("delete", url, null, config),
 
+  // User profile methods
+  getUser,
   getUserProfile,
   createUserProfile,
   updateUserProfile,
@@ -423,8 +439,9 @@ export const apiService = {
 
   profile: {
     get: getUserProfile,
-  // user
-  getUser,
+  },
+
+  // User methods
   getCurrentUser,
   getCurrentUserFromLocalStorage,
 
@@ -436,7 +453,7 @@ export const apiService = {
   },
 
   session: {
-    cancel: cancleSession
+    cancel: cancelSession
   },
 
   checkCommunityStatus,
@@ -445,10 +462,7 @@ export const apiService = {
   // Password reset
   requestPasswordReset,
   validateResetToken,
-  resetPassword
-  // Community related methods
-  checkCommunityStatus,
-  setInCommunityTrue,
+  resetPassword,
 
   // Friend Management
   sendFriendRequest,

@@ -1,7 +1,7 @@
 // Minimal working react-tooltip example for debugging
 import 'react-tooltip/dist/react-tooltip.css';
 import { Tooltip } from 'react-tooltip';
-import React, { useEffect, useState, useContext, useMemo } from 'react';
+import React, { useEffect, useState, useContext, useMemo, useRef } from 'react';
 import { Formik, Form, Field } from 'formik';
 // import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import * as Yup from 'yup';
@@ -52,6 +52,7 @@ export default function CreateAccount({
     (state) => state.profile
   );
   const { t, language } = useContext(LanguageContext);
+  const timeoutRef = useRef(null);
 
   // Helper function to translate backend error messages
   const translateErrorMessage = (errorMsg) => {
@@ -195,11 +196,11 @@ export default function CreateAccount({
     if (!username || username === usernameLastChecked) return;
 
     // username changed -> clear interval
-    if (t) clearTimeout(t);
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     // else, create new timeout
-    if (!t || t > 1) {
-      t = setTimeout(async () => {
+    if (!timeoutRef.current || timeoutRef.current > 1) {
+      timeoutRef.current = setTimeout(async () => {
         setUsernameLastChecked(username);
         const result = await dispatch(checkUserNameAvailability(username));
         // const userId = result?.data?.userId;

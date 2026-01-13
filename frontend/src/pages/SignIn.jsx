@@ -1,7 +1,6 @@
-import { GoogleLogin } from "@react-oauth/google";
 import { Formik, Form, Field } from "formik";
 import { jwtDecode } from "jwt-decode";
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import * as Yup from "yup";
 import { LanguageContext } from "@/components/lib/LanguageContext";
 import { useDispatch } from "react-redux";
@@ -20,7 +19,8 @@ const SignIn = ({ identify }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  {
+  // Check for token in URL on component mount
+  useEffect(() => {
     const loc = document.location;
     const url = new URL(loc);
     const params = url.searchParams;
@@ -40,49 +40,32 @@ const SignIn = ({ identify }) => {
         navigate("/dashboard");
       }, 0);
     }
-  }
+  }, [dispatch, navigate]);
 
   const validationSchema = Yup.object().shape({
     username: Yup.string()
-      .required("Username or email is required")
-      .test(
-        "username-format",
-        "Invalid format. For email: use only letters, numbers, dots, and one @. For username: use Hebrew/English letters, numbers, underscores, hyphens, and dots",
       .required(t('usernameOrEmailRequired'))
       .test(
         'username-format',
         t('invalidUsernameFormat'),
         (value) => {
-          if (value.includes("@")) {
+          if (value && value.includes("@")) {
             return (
               /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(value) &&
               !/[^a-zA-Z0-9.@_-]/.test(value)
             );
           }
-          return /^[\u0590-\u05FFa-zA-Z0-9_\-.]*$/.test(value);
+          return !value || /^[\u0590-\u05FFa-zA-Z0-9_\-.]*$/.test(value);
         }
       )
       .test(
-        "valid-username",
-        "Username can only contain Hebrew/English letters, numbers, underscores, hyphens, and dots",
-        'valid-username',
-        t('usernameValidChars'),
-        (value) => {
-          if (value.includes("@")) return true;
-          return /^[\u0590-\u05FFa-zA-Z0-9_\-.]*$/.test(value);
-        }
-      )
-      .test(
-        "no-consecutive-special",
-        "Username cannot contain consecutive special characters (_.-)",
-        'no-consecutive-special',
+        "no-consecutive-special-chars",
         t('usernameNoConsecutiveSpecial'),
         (value) => {
-          if (value.includes("@")) return true;
+          if (!value || value.includes("@")) return true;
           return !/[_.-]{2,}/.test(value);
         }
       ),
-    password: Yup.string().required("Password is required")
     password: Yup.string().required(t('passwordRequired'))
   });
 
@@ -203,10 +186,7 @@ const SignIn = ({ identify }) => {
               />
             </div>
 
-            <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">
-              Sign In
-            </h2>
-
+            <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">{t('signIn')}</h2>
             {showResetHint && (
               <div className="mb-4 p-3 rounded border border-amber-300 bg-amber-50 text-amber-800 dark:bg-amber-900/30 dark:border-amber-600 dark:text-amber-200">
                 <p className="text-sm mb-1">Trouble signing in?</p>
@@ -217,16 +197,13 @@ const SignIn = ({ identify }) => {
                 >
                   Reset your password
                 </button>
-            <h2 className="text-2xl font-bold mb-6 text-center text-gray-800 dark:text-white">{t('signIn')}</h2>
+              </div>
+            )}
             {error && (
               <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded dark:bg-red-900 dark:border-red-700 dark:text-red-300">
                 <p>{error}</p>
               </div>
             )}
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 rounded dark:bg-red-900 dark:border-red-700 dark:text-red-300">
-             <p>{error}</p>
-            </div>)}
             <div className="mb-4">
               <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t('usernameOrEmail')}
@@ -346,8 +323,6 @@ const SignIn = ({ identify }) => {
       </Formik>
 
       <style jsx global>{`
-      
-      <style>{`
         /* Add smooth transition for input focus */
         input {
           transition: all 0.2s ease-in-out;

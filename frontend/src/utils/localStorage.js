@@ -2,14 +2,37 @@ export class LocalStorageItem {
   constructor(key) {
     this.key = key;
   }
+
   get() {
-    return localStorage.getItem(this.key);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.getItem(this.key);
+      }
+      return null;
+    } catch (error) {
+      console.error(`Error getting localStorage item "${this.key}":`, error);
+      return null;
+    }
   }
+
   set(value) {
-    return localStorage.setItem(this.key, value);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.setItem(this.key, value);
+      }
+    } catch (error) {
+      console.error(`Error setting localStorage item "${this.key}":`, error);
+    }
   }
+
   clear() {
-    return localStorage.removeItem(this.key);
+    try {
+      if (typeof window !== 'undefined' && window.localStorage) {
+        return window.localStorage.removeItem(this.key);
+      }
+    } catch (error) {
+      console.error(`Error clearing localStorage item "${this.key}":`, error);
+    }
   }
 }
 

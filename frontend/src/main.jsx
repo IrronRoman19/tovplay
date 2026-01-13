@@ -12,9 +12,28 @@ import { LanguageProvider } from "@/components/lib/LanguageContext";
 
 import "@/index.css";
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+// Log if Google Client ID is missing in development
+if (!googleClientId && import.meta.env.DEV) {
+  console.warn('VITE_GOOGLE_CLIENT_ID is not set. Google OAuth will be disabled.');
+}
+
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
+    {googleClientId ? (
+      <GoogleOAuthProvider clientId={googleClientId}>
+        <Provider store={store}>
+          <AnalyticsProvider instance={analytics}>
+            <LanguageProvider>
+              <BrowserRouter>
+                <App />
+              </BrowserRouter>
+            </LanguageProvider>
+          </AnalyticsProvider>
+        </Provider>
+      </GoogleOAuthProvider>
+    ) : (
       <Provider store={store}>
         <AnalyticsProvider instance={analytics}>
           <LanguageProvider>
@@ -24,6 +43,6 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           </LanguageProvider>
         </AnalyticsProvider>
       </Provider>
-    </GoogleOAuthProvider>
+    )}
   </React.StrictMode>
 );
