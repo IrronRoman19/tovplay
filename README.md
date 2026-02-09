@@ -14,7 +14,7 @@
 ## Contributors in 2025
 * [Avi](https://github.com/avi12)
 * [Michaelunkai](https://github.com/Michaelunkai)
-* [IrronRoman19](https://github.com/IrronRoman19)
+* Roman - [Github](https://github.com/IrronRoman19), [LinkedIn](https://www.linkedin.com/in/roman-fesunenko/)
 * [sharonshaaul](https://github.com/sharonshaaul)
 * [itamarbr0327](https://github.com/itamarbr0327)
 * [lilachHerzog](https://github.com/lilachHerzog)
